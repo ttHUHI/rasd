@@ -16,13 +16,19 @@ IMG_EXTS = ("*.jpg", "*.jpeg", "*.png", "*.bmp")
 
 
 class NormalTrainDataset(Dataset):
-    """训练集——只加载正常样本。"""
-    def __init__(self, root, transform):
+    """训练集——只加载正常样本。
+
+    classes: 可选类别过滤（MPDD 目录 train/<class>/good/）。None 加载全部。
+    """
+    def __init__(self, root, transform, classes=None):
         root = Path(root)
         self.files = []
         for ext in IMG_EXTS:
-            self.files += list(root.rglob(ext))
-        assert self.files, f"训练目录下没有图片: {root}"
+            for f in root.rglob(ext):
+                if classes is not None and not any(c in f.parts for c in classes):
+                    continue
+                self.files.append(f)
+        assert self.files, f"训练目录下没有图片: {root} (classes={classes})"
         self.transform = transform
 
     def __len__(self):
@@ -34,13 +40,18 @@ class NormalTrainDataset(Dataset):
 
 
 class TestDataset(Dataset):
-    """测试集——目录结构自动推断标签, 缺陷样本带掩码。"""
-    def __init__(self, root, transform, mask_size=224):
+    """测试集——目录结构自动推断标签, 缺陷样本带掩码。
+
+    classes: 可选类别过滤（MPDD 目录 test/<class>/...）。None 加载全部。
+    """
+    def __init__(self, root, transform, mask_size=224, classes=None):
         root = Path(root)
         self.items = []
         for ext in IMG_EXTS:
             for f in root.rglob(ext):
                 if "mask" in f.stem.lower():
+                    continue
+                if classes is not None and not any(c in f.parts for c in classes):
                     continue
                 label = 0 if "good" in f.parts else 1
                 mask = None
@@ -48,7 +59,7 @@ class TestDataset(Dataset):
                     cands = [g for g in f.parent.glob("*mask*") if g.is_file()]
                     mask = cands[0] if cands else None
                 self.items.append((f, label, mask))
-        assert self.items, f"test 目录下没有图片: {root}"
+        assert self.items, f"test 目录下没有图片: {root} (classes={classes})"
         self.transform = transform
         from torchvision import transforms as T
         self.mask_transform = T.Compose([

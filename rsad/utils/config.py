@@ -98,6 +98,8 @@ def build_parser(description="RSAD training"):
     ap.add_argument("--device", default=None)
     ap.add_argument("--data-root", default=None)
     ap.add_argument("--backbone-weights", default=None)
+    ap.add_argument("--cls", default=None,
+                    help="per-class 模式: 只训练/评估该类别 (如 metal_plate)")
     ap.add_argument("--feature-norm", action="store_true", default=None,
                     help="对判别器输入做 per-position L2 归一化（实验性, 默认关）")
     ap.add_argument("--resume", default=None)

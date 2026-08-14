@@ -51,14 +51,17 @@ def train(cfg):
     set_seed()
     device = torch.device(cfg.device if cfg.device != "auto"
                           else ("cuda" if torch.cuda.is_available() else "cpu"))
+    cls_filter = [cfg.cls] if getattr(cfg, "cls", None) else None
     out_dir = Path(cfg.out if hasattr(cfg, "out") else "checkpoints")
+    if cls_filter:
+        out_dir = out_dir / cfg.cls          # per-class: checkpoints/<class>/
     out_dir.mkdir(parents=True, exist_ok=True)
     logger = Logger(out_dir / "train.log")
 
     # 数据
     root = Path(cfg.data_root)
-    train_ds = NormalTrainDataset(root / "train", train_transform(cfg.crop))
-    test_ds = TestDataset(root / "test", test_transform(cfg.crop))
+    train_ds = NormalTrainDataset(root / "train", train_transform(cfg.crop), classes=cls_filter)
+    test_ds = TestDataset(root / "test", test_transform(cfg.crop), classes=cls_filter)
     train_loader = DataLoader(train_ds, batch_size=cfg.batch, shuffle=True,
                               num_workers=cfg.num_workers if hasattr(cfg, "num_workers") else 0,
                               drop_last=True)

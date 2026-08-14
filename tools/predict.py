@@ -3,6 +3,9 @@
 
 用法:
     python tools/predict.py --config configs/mpdd.yaml \
+        --cls metal_plate --input <图片或目录> [--vis <输出目录>]
+        # 类别路由: 自动加载 checkpoints/metal_plate/best.pt
+    python tools/predict.py --config configs/mpdd.yaml \
         --ckpt checkpoints/best.pt --input <图片或目录> [--vis <输出目录>]
 """
 import sys
@@ -20,12 +23,22 @@ from rsad.inference import load_model, predict_image, save_heatmap, collect_imag
 def main():
     ap = build_parser("RSAD inference")
     args = ap.parse_args()
+    # 类别路由: 给 --cls 且未给 --ckpt 时, 自动用 <out>/<cls>/best.pt
     if not args.ckpt:
-        print("请用 --ckpt 指定 checkpoint 路径")
+        if args.cls:
+            base = Path(args.out) if args.out else Path("checkpoints")
+            args.ckpt = str(base / args.cls / "best.pt")
+        else:
+            print("请用 --ckpt 指定 checkpoint, 或 --cls 自动路由到 checkpoints/<cls>/best.pt")
+            return 1
+    if not Path(args.ckpt).exists():
+        print(f"checkpoint 不存在: {args.ckpt}")
+        print(f"提示: per-class 训练输出在 --out <目录> 下时, 推理需加 --out <目录> 保持路由一致")
         return 1
     if not args.input:
         print("请用 --input 指定图片或目录")
         return 1
+    print(f"[路由] cls={args.cls or '(全类)'} ckpt={args.ckpt}")
 
     cfg = load_config(args.config, args)
     device = torch.device(cfg.device if cfg.device != "auto"
