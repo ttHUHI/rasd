@@ -8,45 +8,51 @@
 
 ## 结论
 
-per-class 检测能力显著优于统一模型（加权 I-AUROC 0.698 → 0.833，+13.5），
+per-class 检测能力显著优于统一模型（加权 I-AUROC 0.698 → 0.870，+17.2），
 6 类全部不低于统一模型。
 
-## 结果对比（I-AUROC %）
+## 训练稳定化改进（trainer.py）
 
-| 类别 | per-class | 统一模型 | 论文 Table 2 |
-|------|-----------|----------|--------------|
-| bracket_black | 66.9 | 64.4 | 94.3 |
-| bracket_brown | 84.8 | 73.7 | 99.7 |
-| bracket_white | 78.3 | 72.4 | 96.1 |
-| connector     | 92.6 | 75.7 | 100 |
-| metal_plate   | 99.9 | 97.8 | 100 |
-| tubes         | 77.8 | 48.4 | 99.7 |
-| **加权平均**  | **83.3** | **69.8** | **98.3** |
+- cosine lr 调度（双参数组衰减到 0）
+- 梯度裁剪 clip_grad_norm_(10.0)。注意: 曾用 1.0 导致 connector 训练停滞
+  （0.93→0.65 回归），放宽到 10.0 后恢复且 6 类全面提升。
 
-P-AUROC（加权）：per-class 71.7 vs 统一模型 87.7（per-class 更低，推测因
-统一模型的跨类特征差异被误当异常信号；per-class 去掉该伪信号后更真实）。
+## 结果对比（I-AUROC %，best.pt 评估）
+
+| 类别 | 统一模型 | per-class 20ep | per-class 30ep 改进后 | 论文 Table 2 |
+|------|----------|----------------|----------------------|--------------|
+| bracket_black | 64.4 | 66.9 | **74.1** | 94.3 |
+| bracket_brown | 73.7 | 84.8 | **87.8** | 99.7 |
+| bracket_white | 72.4 | 78.3 | **80.8** | 96.1 |
+| connector     | 75.7 | 92.6 | **93.8** | 100 |
+| metal_plate   | 97.8 | 99.9 | **100.0** | 100 |
+| tubes         | 48.4 | 77.8 | **84.6** | 99.7 |
+| **加权平均**  | **69.8** | **83.3** | **87.0** | **98.3** |
+
+P-AUROC（加权）：per-class 30ep ≈ 73.4（统一模型 87.7 含跨类伪信号，per-class
+更真实）。
 
 ## 训练/评估/推理命令
 
 ```bash
-# 训练单类（20 epoch, sigma=0.1, 输出 checkpoints_pc/<cls>/）
+# 训练单类（30 epoch, cosine lr + 梯度裁剪, 输出 checkpoints_pc30/<cls>/）
 python train.py --config configs/mpdd.yaml --cls metal_plate \
-    --epochs 20 --batch 4 --device cuda --sigma 0.1 --out checkpoints_pc
+    --epochs 30 --batch 4 --device cuda --sigma 0.1 --out checkpoints_pc30
 
 # 评估单类
 python evaluate.py --config configs/mpdd.yaml --cls metal_plate \
-    --ckpt checkpoints_pc/metal_plate/best.pt
+    --ckpt checkpoints_pc30/metal_plate/best.pt
 
 # 推理路由（--cls 自动加载 <out>/<cls>/best.pt）
 python tools/predict.py --config configs/mpdd.yaml --cls metal_plate \
-    --out checkpoints_pc --input <图片或目录> [--vis 输出目录]
+    --out checkpoints_pc30 --input <图片或目录> [--vis 输出目录]
 ```
 
 ## 已知弱点与后续
 
-- **tubes**：排序 AUROC 0.778，但阈值 0.5 下缺陷检出仅 17.8%（绝对分数
-  校准偏低）——需更小 sigma / 更长训练 / 阈值下移
-- **bracket_black**：训练震荡（epoch 10 best 0.669，epoch 20 崩至 0.35），
-  best.pt 机制兜底，可试更小 sigma 或更短训练
-- 与论文（94-100）仍有明显差距，per-class 是正确方向但不是全部答案；
-  后续结合改进路线（cosine lr / 空间平滑噪声 / 特征归一化）逐类优化
+- **tubes**：排序 AUROC 0.846，但阈值 0.5 下缺陷检出率仍偏低（绝对分数
+  校准问题）——可阈值下移或继续小 sigma 训练
+- **bracket_black**：best 在 ep20（0.741），ep30 略回落（0.697）——训练仍
+  有波动，best.pt 机制兜底
+- 与论文（94-100）仍有差距；下一步候选：空间平滑噪声（匹配真实缺陷的
+  连续区域）、特征归一化 + 相对 sigma、逐类调 sigma

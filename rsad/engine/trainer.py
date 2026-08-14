@@ -30,6 +30,10 @@ def train_one_epoch(model, loader, opt, device, cfg):
         )
         opt.zero_grad()
         loss.backward()
+        # 梯度裁剪: 抑制极端梯度（诊断显示 |g_disc| 可到 100+）;
+        # 阈值 10.0 放宽, 避免压死正常学习信号（1.0 曾导致 connector 训练停滞）
+        torch.nn.utils.clip_grad_norm_(
+            [p for g in opt.param_groups for p in g["params"]], max_norm=10.0)
         opt.step()
         n_samples += len(imgs)
         tot_loss += loss.item() * len(imgs)
@@ -93,6 +97,10 @@ def train(cfg):
         best = saved_best
         logger.write(f"[resume] 从 {cfg.resume} 恢复: 起始 epoch={start_epoch}, best={best:.4f}\n")
 
+    # cosine lr 调度: 双参数组共同衰减到 0, 抑制后期震荡
+    scheduler = optim.lr_scheduler.CosineAnnealingLR(
+        opt, T_max=cfg.epochs, last_epoch=start_epoch - 2)
+
     for epoch in range(start_epoch, cfg.epochs + 1):
         avg_loss, avg_seg, avg_cls = train_one_epoch(model, train_loader, opt, device, cfg)
 
@@ -118,6 +126,7 @@ def train(cfg):
         # 每轮保存 latest.pt
         save_ckpt(model, out_dir, "latest.pt", epoch, best,
                   cfg.sigma if hasattr(cfg, "sigma") else 0.015)
+        scheduler.step()
 
     # 最终评估
     model.extractor.eval(); model.aligner.eval(); model.disc.eval()
