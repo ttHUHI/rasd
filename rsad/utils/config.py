@@ -107,4 +107,6 @@ def build_parser(description="RSAD training"):
     ap.add_argument("--ckpt", default=None)  # for evaluate/predict
     ap.add_argument("--input", default=None)
     ap.add_argument("--vis", default=None)
+    ap.add_argument("--th", type=float, default=None,
+                    help="判定阈值（默认 0.5; --cls 路由时自动读 <out>/<cls>/threshold.json）")
     return ap

@@ -8,6 +8,7 @@
     python tools/predict.py --config configs/mpdd.yaml \
         --ckpt checkpoints/best.pt --input <图片或目录> [--vis <输出目录>]
 """
+import json
 import sys
 from pathlib import Path
 
@@ -40,6 +41,16 @@ def main():
         return 1
     print(f"[路由] cls={args.cls or '(全类)'} ckpt={args.ckpt}")
 
+    # 阈值: --th 显式指定 > 路由目录下的 threshold.json > 默认 0.5
+    th = args.th
+    if th is None:
+        tfile = Path(args.ckpt).parent / "threshold.json"
+        if tfile.exists():
+            th = json.load(open(tfile, encoding="utf-8"))["th"]
+    if th is None:
+        th = 0.5
+    print(f"[阈值] th={th:.4f}")
+
     cfg = load_config(args.config, args)
     device = torch.device(cfg.device if cfg.device != "auto"
                           else ("cuda" if torch.cuda.is_available() else "cpu"))
@@ -58,7 +69,7 @@ def main():
     print(f"推理 {len(files)} 张图片 (ckpt={args.ckpt}, device={device})")
     for i, f in enumerate(files, 1):
         s_ad, anom, img = predict_image(model, f, transform, device)
-        tag = "NORMAL" if s_ad < 0.5 else "DEFECT"
+        tag = "NORMAL" if s_ad < th else "DEFECT"
         print(f"  [{i:3d}/{len(files)}] {f}  S_AD={s_ad:.4f}  {tag}")
         if vis_dir:
             save_heatmap(img, anom, vis_dir / f"{i:03d}_{f.stem}_heatmap.png", s_ad)
