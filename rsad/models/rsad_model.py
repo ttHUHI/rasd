@@ -31,6 +31,7 @@ class RSADModel(nn.Module):
         )
         self.fuser = DefectFeatureFuser(
             sigma=cfg.sigma if hasattr(cfg, "sigma") else 0.015,
+            noise_smooth=getattr(cfg, "noise_smooth", None),
         )
         self.disc = FeatureDiscriminator(
             in_ch=cfg.dim if hasattr(cfg, "dim") else 1536,

@@ -65,6 +65,24 @@ bracket_brown/white、connector 提升明显；bracket_black 在 ep30 后饱和�
 注意: 用训练集正常样本校准（--split train）会因判别器过拟合训练样本而
 阈值偏低、测试误报偏高（tubes 误报 56%），部署应选 --split test。
 
+## 空间平滑噪声实验（负结果, 2026-08）
+
+假设: bracket_black 的 hole/scratches 是空间连续区域, i.i.d. 高斯噪声教判别器
+"孤立噪点"模式导致无响应 → 噪声先采样再高斯模糊(k5s1.0)生成连续异常区域。
+
+结果 (bracket_black, 40ep best I-AUROC): 全部低于 base, **无效**。
+
+| 配置 | 40ep best | 说明 |
+|------|-----------|------|
+| base sigma=0.1 (无平滑) | 0.741 (30ep)/0.768 (80ep) | 对照 |
+| 平滑 k5s1.0 + sigma=0.2 | 0.719 | 略低 |
+| 平滑 k5s1.0 + sigma=0.1 | 0.598 | 明显差(慢热) |
+| 平滑 k5s1.0 + sigma=0.05 | 0.663 | 差 |
+
+结论: 噪声形状不是 bracket_black 瓶颈; 更可能是 hole/scratches 在 WRN50
+特征空间的偏移本身过小(判别器学不到), 属特征层/判别器容量问题。
+代码保留(默认关闭), 后续可转向判别器 3×3 conv / 数据增强 / 特征金字塔加 layer1。
+
 ## 训练/评估/推理命令
 
 ```bash

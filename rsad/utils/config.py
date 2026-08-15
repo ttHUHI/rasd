@@ -102,6 +102,8 @@ def build_parser(description="RSAD training"):
                     help="per-class 模式: 只训练/评估该类别 (如 metal_plate)")
     ap.add_argument("--feature-norm", action="store_true", default=None,
                     help="对判别器输入做 per-position L2 归一化（实验性, 默认关）")
+    ap.add_argument("--noise-smooth", default=None,
+                    help="平滑噪声 k<奇数>s<高斯σ>, 如 k5s1.0（生成连续异常区域, 实验性）")
     ap.add_argument("--resume", default=None)
     ap.add_argument("--out", default=None)
     ap.add_argument("--ckpt", default=None)  # for evaluate/predict

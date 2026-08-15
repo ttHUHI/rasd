@@ -74,6 +74,16 @@ def train(cfg):
                              collate_fn=mask_collate)
     logger.write(f"训练(正常): {len(train_ds)} 张 | 测试: {len(test_ds)} 张\n")
 
+    # 解析 --noise-smooth "k5s1.0" -> {"kernel":5,"sigma":1.0}（须在 RSADModel 构建前;
+    # yaml 直接写 dict 亦可）
+    if isinstance(getattr(cfg, "noise_smooth", None), str):
+        import re
+        m = re.fullmatch(r"k(\d+)s([\d.]+)", cfg.noise_smooth.strip())
+        cfg.noise_smooth = ({"kernel": int(m.group(1)), "sigma": float(m.group(2))}
+                            if m else None)
+    if getattr(cfg, "noise_smooth", None):
+        logger.write(f"[noise_smooth] {cfg.noise_smooth}\n")
+
     # 模型
     model = RSADModel(cfg).to(device)
 

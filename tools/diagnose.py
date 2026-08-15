@@ -30,9 +30,15 @@ if "alpha" in args:
     cfg.focal_alpha = float(args["alpha"])
 if "feature_norm" in args:
     cfg.feature_norm = args["feature_norm"].lower() in ("1", "true", "yes")
+if "noise_smooth" in args:
+    import re
+    m = re.fullmatch(r"k(\d+)s([\d.]+)", args["noise_smooth"].strip())
+    cfg.noise_smooth = ({"kernel": int(m.group(1)), "sigma": float(m.group(2))}
+                        if m else None)
 EPOCHS = int(args.get("epochs", 3))
 print(f"[diag] sigma={cfg.sigma} gamma={cfg.focal_gamma} alpha={cfg.focal_alpha} "
-      f"feature_norm={getattr(cfg, 'feature_norm', False)} epochs={EPOCHS}")
+      f"feature_norm={getattr(cfg, 'feature_norm', False)} "
+      f"noise_smooth={getattr(cfg, 'noise_smooth', None)} epochs={EPOCHS}")
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 root = Path(cfg.data_root)
 train_ds = NormalTrainDataset(root / "train", train_transform(cfg.crop))
