@@ -23,22 +23,55 @@ conda activate rsad
 pip install -r requirements.txt
 ```
 
-## 数据获取
+## 数据与权重获取
 
-数据集不随仓库分发（约 1.8GB），获取途径：
+### 数据（MPDD 数据集，约 1.8GB）
 
-1. **官方 GitHub**：https://github.com/stepanje/MPDD
-2. **本仓库种子文件**：`MPDD.torrent`（需 BitTorrent 客户端）
-3. **中文镜像**：https://orion.hyper.ai/datasets/31541
+数据集**不随代码仓库分发**，按下列任一途径获取后放到约定路径即可：
 
-放置到 `../rsad/data/MPDD`（相对本仓库根目录）后校验：
+**途径一：官方 GitHub（推荐）**
+- 仓库：https://github.com/stepanje/MPDD
+- 页面找 "Download"/"Clone" 按钮，或直接 `git clone https://github.com/stepanje/MPDD`
+- 该仓库即数据集本体（含 `train/`、`test/` 目录）
+
+**途径二：本仓库种子文件**
+- 仓库根目录的 `MPDD.torrent`（17.8KB）用 BitTorrent 客户端（qBittorrent/µTorrent）打开下载
+
+**途径三：国内镜像**
+- 超神经 Hyper.AI：https://orion.hyper.ai/datasets/31541
+
+**放置与校验**：数据放到 `../rsad/data/MPDD`（相对本仓库根目录，即 `rsad_v2` 的上一级 `rsad/data/MPDD`），运行：
 
 ```bash
-python tools/setup_data.py            # 检测并校验（期望 train 888 / test 458）
-python tools/setup_data.py --clone    # 缺失时自动从官方仓库克隆
+python tools/setup_data.py            # 检测+校验（期望 train 888 / test 458，逐类核对）
+python tools/setup_data.py --clone    # 缺失时自动从官方仓库克隆到约定路径
 ```
 
-预训练权重：`python tools/download_weights.py`（WRN50 ImageNet，默认放 `../rsad/weights/wrn50_imagenet.bin`）。
+**目录结构要求**（校验通过即正确）：
+```
+rsad/data/MPDD/
+├── train/<类别>/good/*.png          # 训练正常样本（6 类共 888 张）
+└── test/<类别>/good/…               # 测试正常
+    test/<类别>/<缺陷类型>/*.png      # 缺陷样本 + 同名 *_mask.png 掩码
+```
+
+### 预训练权重（WRN50 ImageNet）
+
+**方式一：自动下载（推荐）**
+```bash
+python tools/download_weights.py      # 默认下载到 ../rsad/weights/wrn50_imagenet.bin
+```
+- 下载源：HuggingFace 镜像 `hf-mirror.com`（国内可达性较好）
+
+**方式二：手动下载**
+- 官方权重：torchvision `wide_resnet50_2` 的 IMAGENET1K_V2 权重（`pytorch_model.bin`，约 180MB）
+- 放置到 `../rsad/weights/wrn50_imagenet.bin`
+
+**兜底**：若未提供权重，代码会自动尝试 torchvision 在线加载（需能访问 pytorch.org）。
+
+**校验**：启动训练/评估时打印 `[backbone] 本地权重 ... 加载 320/320 键` 即为成功。
+
+> 路径规则：`data_root`/`backbone_weights` 等相对路径统一按**项目根目录**（`rsad_v2` 所在目录）解析，因此从任意 cwd 运行结果一致。
 
 ## 使用
 
