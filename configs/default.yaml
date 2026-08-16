@@ -4,7 +4,7 @@ model:
   bottleneck: 64
   sigma: 0.1   # 论文为 0.015；本实现 WRN50 特征未归一化（feats std≈0.085），
                # 0.015 噪声信噪比过低导致判别器 pos/neg 梯度抵消、训练失效，见 tools/diagnose.py
-  backbone_weights: ../rasd/weights/wrn50_imagenet.bin
+  backbone_weights: ../rsad/weights/wrn50_imagenet.bin
   patch_size: 3          # 3×3 邻域聚合（式(2)(3)）
   target_size: 28         # 统一到 28×28（式(4)）
   layers: [2, 3]          # WRN50 layer2+layer3

@@ -1,5 +1,5 @@
 # 消融: Mona（Table 5 第 3 行 → 与 default 一致）
-data_root: ../rasd/data/MPDD
+data_root: ../rsad/data/MPDD
 model:
   dim: 1536
   bottleneck: 64
