@@ -1,0 +1,7 @@
+# 消融: FC 层替代 Mona（Table 5 第 2 行，1536×1536 FC）
+data_root: ../rsad/data/MPDD
+model:
+  dim: 1536
+  sigma: 0.1   # 与 default 一致（论文 0.015 在未归一化特征上训练失效）
+  adapter_type: fc    # 全连接层, 无 DWConv
+  bottleneck: 1536    # FC 不降维

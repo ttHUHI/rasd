@@ -1,0 +1,15 @@
+# 训练产物 / 权重（模型文件体积大, 不入库）
+checkpoints*/
+vis/
+
+# 日志
+*.log
+/train_*_log.txt
+
+# Python
+__pycache__/
+*.pyc
+
+# 系统
+.DS_Store
+Thumbs.db

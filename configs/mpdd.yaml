@@ -1,0 +1,3 @@
+# MPDD 配置 — 继承 default，覆盖数据路径
+data_root: ../rsad/data/MPDD
+classes: [bracket_black, bracket_brown, bracket_white, connector, metal_plate, tubes]

@@ -1,0 +1,7 @@
+# 消融: 无 adapter（Table 5 第 1 行）
+data_root: ../rsad/data/MPDD
+model:
+  dim: 1536
+  sigma: 0.1   # 与 default 一致
+  # aligner = identity（不插入任何可训练模块）
+  use_adapter: False
