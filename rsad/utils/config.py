@@ -6,8 +6,8 @@ from types import SimpleNamespace
 
 import yaml
 
-# 配置文件里的相对路径字段一律相对项目根目录（rasd_v2 所在目录）解析，
-# 与原本"cd rasd_v2 后运行"的语义一致，且从任意 cwd 运行结果不变。
+# 配置文件里的相对路径字段一律相对项目根目录（rsad_v2 所在目录）解析，
+# 与原本"cd rsad_v2 后运行"的语义一致，且从任意 cwd 运行结果不变。
 _REL_PATH_KEYS = ("data_root", "backbone_weights")
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
