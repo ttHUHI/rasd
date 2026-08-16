@@ -107,3 +107,23 @@ python tools/predict.py --config configs/mpdd.yaml --cls metal_plate \
   有波动，best.pt 机制兜底
 - 与论文（94-100）仍有差距；下一步候选：空间平滑噪声（匹配真实缺陷的
   连续区域）、特征归一化 + 相对 sigma、逐类调 sigma
+
+## 对比度增强 CLAHE 实验（部分有效, 2026-08）
+
+假设: bracket_black 深色表面划痕/孔洞对比度低 → CLAHE 局部直方图均衡放大
+低对比缺陷, 提高 WRN50 早期层响应。实现: transforms 加 contrast='clahe'
+(可配置, 默认 None, 训练/推理一致, checkpoint 存 contrast 标志)。
+
+结果 (bracket_black 80 轮):
+
+| 指标 | base | CLAHE |
+|------|------|-------|
+| I-AUROC | 0.768 | 0.747 (略降) |
+| hole 检出率 | 33.3% | **91.7%** (+58.4) |
+| scratches 检出率 | 14.3% | 14.3% (无变化) |
+| 正常误报率 | 6.2% | 6.2% |
+
+结论: **CLAHE 对 hole(孔洞)有效**(深色表面暗斑被增强), 对 scratches(细长
+低对比划痕)无效。整体 AUROC 略降(全局排序被 scratches 拖累)。
+权衡: 若质检场景看重孔洞检出, 可对 bracket_black 采用 CLAHE 模型;
+若追求全局 AUROC, 保持 base。scratches 是 CLAHE 无法解决的最后短板。

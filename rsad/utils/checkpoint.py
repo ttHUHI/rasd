@@ -13,6 +13,7 @@ def save_ckpt(model, out_dir, name, epoch, best, sigma):
         "epoch": epoch,
         "best": best,
         "feature_norm": bool(getattr(model.cfg, "feature_norm", False)),
+        "contrast": getattr(model.cfg, "contrast", None),
     }
     path = Path(out_dir) / name
     torch.save(ck, path)
@@ -29,6 +30,8 @@ def load_ckpt(model, path, device):
     # 结构标志写回 cfg, 保证评估/推理与训练行为一致
     if "feature_norm" in ck:
         model.cfg.feature_norm = bool(ck["feature_norm"])
+    if "contrast" in ck:
+        model.cfg.contrast = ck["contrast"]
     epoch = int(ck.get("epoch", 0))
     best = float(ck.get("best", 0.0))
     sigma = ck.get("sigma", 0.015)

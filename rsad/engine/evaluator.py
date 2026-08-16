@@ -21,7 +21,8 @@ def evaluate(cfg):
 
     cls_filter = [cfg.cls] if getattr(cfg, "cls", None) else None
     ds = TestDataset(Path(cfg.data_root) / "test",
-                     test_transform(cfg.crop if hasattr(cfg, "crop") else 224),
+                     test_transform(cfg.crop if hasattr(cfg, "crop") else 224,
+                                    contrast=getattr(cfg, "contrast", None)),
                      classes=cls_filter)
     loader = DataLoader(ds, batch_size=cfg.batch, shuffle=False,
                         num_workers=0, collate_fn=mask_collate)

@@ -49,7 +49,8 @@ def main():
         return 1
 
     model = load_model(cfg, str(ckpt), device)
-    transform = test_transform(cfg.crop if hasattr(cfg, "crop") else 224)
+    transform = test_transform(cfg.crop if hasattr(cfg, "crop") else 224,
+                               contrast=getattr(cfg, "contrast", None))
     root = Path(cfg.data_root)
 
     if args.split == "test":

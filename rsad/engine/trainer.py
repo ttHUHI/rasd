@@ -64,8 +64,11 @@ def train(cfg):
 
     # 数据
     root = Path(cfg.data_root)
-    train_ds = NormalTrainDataset(root / "train", train_transform(cfg.crop), classes=cls_filter)
-    test_ds = TestDataset(root / "test", test_transform(cfg.crop), classes=cls_filter)
+    contrast = getattr(cfg, "contrast", None)
+    train_ds = NormalTrainDataset(root / "train", train_transform(cfg.crop, contrast=contrast),
+                                  classes=cls_filter)
+    test_ds = TestDataset(root / "test", test_transform(cfg.crop, contrast=contrast),
+                          classes=cls_filter)
     train_loader = DataLoader(train_ds, batch_size=cfg.batch, shuffle=True,
                               num_workers=cfg.num_workers if hasattr(cfg, "num_workers") else 0,
                               drop_last=True)

@@ -55,7 +55,8 @@ def main():
     device = torch.device(cfg.device if cfg.device != "auto"
                           else ("cuda" if torch.cuda.is_available() else "cpu"))
     model = load_model(cfg, args.ckpt, device)
-    transform = test_transform(cfg.crop if hasattr(cfg, "crop") else 224)
+    transform = test_transform(cfg.crop if hasattr(cfg, "crop") else 224,
+                               contrast=getattr(cfg, "contrast", None))
 
     files = collect_images(args.input)
     if not files:
