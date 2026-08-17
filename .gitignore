@@ -13,3 +13,6 @@ __pycache__/
 # 系统
 .DS_Store
 Thumbs.db
+
+# Office 临时锁文件
+~$*.docx
