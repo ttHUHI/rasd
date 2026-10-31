@@ -1,0 +1,63 @@
+训练(正常): 289 张 | 验证: 40 张 | 最终测试: 39
+[resume] 从 checkpoints_v3\bracket_black\latest.pt 恢复: 起始 epoch=26, best=0.6094
+[resume] 已恢复 optimizer/scheduler/RNG 状态
+epoch  26/80 | loss=0.1930 (seg=0.1527 cls=0.0404)
+epoch  27/80 | loss=0.0234 (seg=0.0069 cls=0.0165)
+epoch  28/80 | loss=0.0174 (seg=0.0070 cls=0.0103)
+epoch  29/80 | loss=0.0169 (seg=0.0072 cls=0.0097)
+epoch  30/80 | loss=0.0147 (seg=0.0057 cls=0.0090) | VAL I-AUROC=0.6615 | VAL P-AUROC=0.6531
+  -> 保存 best.pt (VAL I-AUROC=0.6615)
+epoch  31/80 | loss=0.0388 (seg=0.0271 cls=0.0117)
+epoch  32/80 | loss=0.0306 (seg=0.0198 cls=0.0108)
+epoch  33/80 | loss=0.0197 (seg=0.0126 cls=0.0071)
+epoch  34/80 | loss=0.0153 (seg=0.0065 cls=0.0088)
+epoch  35/80 | loss=0.0388 (seg=0.0272 cls=0.0117)
+epoch  36/80 | loss=0.0343 (seg=0.0224 cls=0.0119)
+epoch  37/80 | loss=0.0608 (seg=0.0484 cls=0.0125)
+epoch  38/80 | loss=0.3856 (seg=0.3401 cls=0.0455)
+epoch  39/80 | loss=0.4794 (seg=0.4208 cls=0.0586)
+epoch  40/80 | loss=0.2460 (seg=0.2001 cls=0.0459) | VAL I-AUROC=0.5339 | VAL P-AUROC=0.6501
+epoch  41/80 | loss=0.0311 (seg=0.0134 cls=0.0177)
+epoch  42/80 | loss=0.0070 (seg=0.0017 cls=0.0054)
+epoch  43/80 | loss=0.0036 (seg=0.0003 cls=0.0033)
+epoch  44/80 | loss=0.0011 (seg=0.0001 cls=0.0010)
+epoch  45/80 | loss=0.0010 (seg=0.0001 cls=0.0009)
+epoch  46/80 | loss=0.0009 (seg=0.0001 cls=0.0008)
+epoch  47/80 | loss=0.0008 (seg=0.0000 cls=0.0007)
+epoch  48/80 | loss=0.0007 (seg=0.0000 cls=0.0007)
+epoch  49/80 | loss=0.0007 (seg=0.0000 cls=0.0006)
+epoch  50/80 | loss=0.0008 (seg=0.0000 cls=0.0007) | VAL I-AUROC=0.6406 | VAL P-AUROC=0.5194
+epoch  51/80 | loss=0.0007 (seg=0.0000 cls=0.0006)
+epoch  52/80 | loss=0.0006 (seg=0.0000 cls=0.0006)
+epoch  53/80 | loss=0.0006 (seg=0.0000 cls=0.0006)
+epoch  54/80 | loss=0.0006 (seg=0.0000 cls=0.0006)
+epoch  55/80 | loss=0.0006 (seg=0.0000 cls=0.0006)
+epoch  56/80 | loss=0.0006 (seg=0.0000 cls=0.0005)
+epoch  57/80 | loss=0.0005 (seg=0.0000 cls=0.0005)
+epoch  58/80 | loss=0.0005 (seg=0.0000 cls=0.0005)
+epoch  59/80 | loss=0.0005 (seg=0.0000 cls=0.0005)
+epoch  60/80 | loss=0.0005 (seg=0.0000 cls=0.0004) | VAL I-AUROC=0.6510 | VAL P-AUROC=0.5608
+epoch  61/80 | loss=0.0005 (seg=0.0000 cls=0.0004)
+epoch  62/80 | loss=0.0004 (seg=0.0000 cls=0.0004)
+epoch  63/80 | loss=0.0004 (seg=0.0000 cls=0.0004)
+epoch  64/80 | loss=0.0005 (seg=0.0000 cls=0.0004)
+epoch  65/80 | loss=0.0004 (seg=0.0000 cls=0.0004)
+epoch  66/80 | loss=0.0004 (seg=0.0000 cls=0.0004)
+epoch  67/80 | loss=0.0004 (seg=0.0000 cls=0.0004)
+epoch  68/80 | loss=0.0004 (seg=0.0000 cls=0.0004)
+epoch  69/80 | loss=0.0004 (seg=0.0000 cls=0.0004)
+epoch  70/80 | loss=0.0004 (seg=0.0000 cls=0.0004) | VAL I-AUROC=0.6719 | VAL P-AUROC=0.5408
+  -> 保存 best.pt (VAL I-AUROC=0.6719)
+epoch  71/80 | loss=0.0004 (seg=0.0000 cls=0.0004)
+epoch  72/80 | loss=0.0004 (seg=0.0000 cls=0.0004)
+epoch  73/80 | loss=0.0004 (seg=0.0000 cls=0.0004)
+epoch  74/80 | loss=0.0004 (seg=0.0000 cls=0.0004)
+epoch  75/80 | loss=0.0004 (seg=0.0000 cls=0.0004)
+epoch  76/80 | loss=0.0004 (seg=0.0000 cls=0.0004)
+epoch  77/80 | loss=0.0004 (seg=0.0000 cls=0.0004)
+epoch  78/80 | loss=0.0004 (seg=0.0000 cls=0.0004)
+epoch  79/80 | loss=0.0004 (seg=0.0000 cls=0.0004)
+epoch  80/80 | loss=0.0004 (seg=0.0000 cls=0.0004) | VAL I-AUROC=0.6797 | VAL P-AUROC=0.5450
+  -> 保存 best.pt (VAL I-AUROC=0.6797)
+
+最终测试: I-AUROC=0.7011 | P-AUROC=0.7133 | 选中 epoch=80 | best.pt 根据验证集选择
