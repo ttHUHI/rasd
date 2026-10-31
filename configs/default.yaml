@@ -1,0 +1,33 @@
+# RSAD v2 default config — 对齐论文 §4.3
+model:
+  dim: 1536
+  bottleneck: 64
+  sigma: 0.1   # 论文为 0.015；本实现 WRN50 特征未归一化（feats std≈0.085），
+               # 0.015 噪声信噪比过低导致判别器 pos/neg 梯度抵消、训练失效，见 tools/diagnose.py
+  backbone_weights: ../rsad/weights/wrn50_imagenet.bin
+  patch_size: 3          # 3×3 邻域聚合（式(2)(3)）
+  target_size: 28         # 统一到 28×28（式(4)）
+  layers: [2, 3]          # WRN50 layer2+layer3
+  # feature_norm: false  # 可选: true 时对判别器输入做 per-position L2 归一化
+                         #（实验性; 默认关闭保持论文原样, 见 tools/diagnose.py）
+
+train:
+  epochs: 160
+  batch: 4
+  lr: 1.0e-4              # Aligner lr（§4.3）
+  lr_d: 2.0e-4            # Discriminator lr（§4.3）
+  wd: 1.0e-5              # weight decay（§4.3）
+  device: auto             # cuda / cpu / auto
+  crop: 224                # CenterCrop 尺寸（§4.3）
+  num_workers: 0
+
+eval:
+  every_n_epochs: 10
+
+loss:
+  th_pos: 0.5              # truncated L1 正常阈值（logit 域）
+  th_neg: -0.5             # truncated L1 伪缺陷阈值（logit 域）
+  focal_gamma: 2.0
+  focal_alpha: 0.25
+
+out: checkpoints
